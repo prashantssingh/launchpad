@@ -14,9 +14,3 @@ func prepareSatelliteForLaunch(satArr []int) satelliteSlice {
 		satellites: satStrArr,
 	}
 }
-
-func spawnFuncs(count int, f func()) {
-	for i := 0; i < count; i++ {
-		go f()
-	}
-}

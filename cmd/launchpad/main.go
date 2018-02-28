@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/launchpad/launcher"
-	"github.com/launchpad/models"
+	"github.com/prashantssingh/launchpad/launcher"
+	"github.com/prashantssingh/launchpad/models"
 )
 
 const (
