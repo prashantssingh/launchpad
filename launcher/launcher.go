@@ -42,10 +42,9 @@ func Launcher(ls models.LaunchSettings) error {
 
 	go launchSatellites(ls.LaunchpadCount, passControlChans[ls.LaunchpadCount-1], passControlChans[0], ls.PerPadLaunchCount, ls.SatelliteCount, &s)
 
-	// now start by sending signal to LP1 and the signal is the satellite id with which it should start
+	// send the satellite ID (lets say) to the first launchpad and wait for entire launch to get concluded
 	passControlChans[0] <- 1
 
-	// now wait till they are done
 	s.Wait()
 
 	fmt.Println("Boyyy SpaceX is done launching satellites")
@@ -53,20 +52,18 @@ func Launcher(ls models.LaunchSettings) error {
 	return nil
 }
 
-// Inputs --
+// Inputs:
 // id: ID of launchpad such as LP1, LP2
 // rcvChan: channel to receive start launchpad ID of the satellites to be launched next from the previous launchpad
 // sendChan: channel to send start lauchpad ID of the satellites to be launched next to the next launch pad
 func launchSatellites(id int, rcvChan chan int, sendChan chan int, launchCount int, totalCount int, s *sync.WaitGroup) {
-	//start := id
-	fmt.Println("Initialing", id)
 
 	site := "LP" + strconv.Itoa(id)
 	for {
 		select {
 		case start := <-rcvChan:
 
-			//slice of satellites to be launched simulteneously
+			// slice of satellites to be launched simulteneously
 			var satNum []int
 			for j := 0; j < launchCount; j++ {
 				if start+j <= totalCount {
@@ -76,11 +73,10 @@ func launchSatellites(id int, rcvChan chan int, sendChan chan int, launchCount i
 				}
 			}
 
-			// launch them
 			preparedSatellites := prepareSatelliteForLaunch(satNum)
 			log.Printf("Launching statellites from site %s... \t%+v", site, preparedSatellites.satellites)
 
-			// if we are done launching total number satellites, tell this to all launchpads by simple closing the donechan
+			// if we are done launching total number satellites, tell this to all launchpads by simply closing the donechan
 			start = start + launchCount
 			if start >= totalCount {
 				close(doneCh)
@@ -88,7 +84,7 @@ func launchSatellites(id int, rcvChan chan int, sendChan chan int, launchCount i
 				return
 			}
 
-			// if we are not done ask next launchpad to start
+			// continue if the
 			sendChan <- start
 
 		case <-doneCh:
