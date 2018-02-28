@@ -24,7 +24,7 @@ func main() {
 	flag.Parse()
 
 	lauchSettings := models.NewSatelliteSettings(*lauchPadCount, *perPadLaunchCount, *satellitecount)
-	if err, ok := launcher.launch(lauchSettings); !ok {
+	if err := launcher.Launcher(lauchSettings); err != nil {
 		log.Printf("error encountered while launching: %+v", err)
 	}
 }
